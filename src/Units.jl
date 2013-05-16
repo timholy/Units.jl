@@ -132,7 +132,7 @@ const prefix_table = {
   (Femto,        1e-15,        "f",          "f",         "f",       "femto")
   (Pico,         1e-12,        "p",          "p",         "p",       "pico")
   (Nano,         1e-9,         "n",          "n",         "n",       "nano")
-  (Micro,        1e-6,         "u",          "\u03bc",   L"$\mu$",   "micro")
+  (Micro,        1e-6,         "u",          "\u03bc",    "\$\\mu\$","micro")
   (Milli,        1e-3,         "m",          "m",         "m",       "milli")
   (Centi,        1e-2,         "c",          "c",         "c",       "centi")
   (Deci,         1e-1,         "d",          "d",         "d",       "deci")
@@ -291,7 +291,7 @@ let
   # Unit     RefUnit    ToRef            show      pshow     lshow   fshow
 const utable = {
   (Meter,    Meter,    1,                "m",      "m",      "m",    "meter")
-  (Angstrom, Meter,    1e-10,            "A",      "\u212b",L"$\AA$","angstrom")
+  (Angstrom, Meter,    1e-10,            "A",      "\u212b", "\$\\AA\$","angstrom")
   (Inch,     Meter,    25.4/1000,        "in",     "in",     "in",   "inch")
   (Foot,     Meter,    12*25.4/1000,     "ft",     "ft",     "ft",   "foot")
   (Yard,     Meter,    36*25.4/1000,     "yd",     "yd",     "yd",   "yard")
@@ -321,7 +321,7 @@ const utable = {
   (Hour,       Second,      3600,          "hr",     "hr",     "hr",   "hour")
   (Day,        Second,      86400,         "d",      "d",      "d",    "day")
   (YearJulian, Second,      365.25*86400,  "yr",     "yr",     "yr",   "year")
-  (PlanckTime, Second,      5.3910632e-44, "tP",     "tP",    L"$t_P$","Planck time")
+  (PlanckTime, Second,      5.3910632e-44, "tP",     "tP",     "\$t_P\$","Planck time")
 }
 _unit_gen_func_multiplicative(utable)
 _unit_gen_dict_with_prefix({utable[1]})   # prefixes are only common for seconds
@@ -351,7 +351,7 @@ const utable = {
   (Gram,       Gram,        1,             "g",      "g",      "g",   "gram")
   (AtomicMassUnit, Gram,    1.66053892173e-24, "amu","amu",    "amu", "atomic mass unit")
   (Dalton,     Gram,        1.66053892173e-24, "Da", "Da",     "Da",  "Dalton")
-  (PlanckMass, Gram,        2.1765113e-5,  "mP",     "mP",    L"$m_P$","Planck mass")
+  (PlanckMass, Gram,        2.1765113e-5,  "mP",     "mP",     "\$m_P\$","Planck mass")
 }
 _unit_gen_func_multiplicative(utable)
 _unit_gen_dict_with_prefix({utable[1]})
