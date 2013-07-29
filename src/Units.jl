@@ -104,21 +104,21 @@ type Yotta <: SIPrefix end
 # PrettyShow and PrettyString
 pshow(x) = pshow(OUTPUT_STREAM::IO, x)
 function pstring(x)
-    s = memio(0, false)
+    s = IOBuffer()
     pshow(s, x)
     takebuf_string(s)
 end
 # LatexShow and LatexString
 lshow(x) = lshow(OUTPUT_STREAM::IO, x)
 function lstring(x)
-    s = memio(0, false)
+    s = IOBuffer()
     lshow(s, x)
     takebuf_string(s)
 end
 # FullShow and FullString
 fshow(x) = fshow(OUTPUT_STREAM::IO, x)
 function fstring(x)
-    s = memio(0, false)
+    s = IOBuffer()
     fshow(s, x)
     takebuf_string(s)
 end
