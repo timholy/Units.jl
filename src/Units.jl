@@ -79,44 +79,44 @@ export  SIPrefix,
 
 
 abstract SIPrefix
-type Yocto <: SIPrefix end
-type Zepto <: SIPrefix end
-type Atto <: SIPrefix end
-type Femto <: SIPrefix end
-type Pico <: SIPrefix end
-type Nano <: SIPrefix end
-type Micro <: SIPrefix end
-type Milli <: SIPrefix end
-type Centi <: SIPrefix end
-type Deci <: SIPrefix end
-type SINone <: SIPrefix end
-type Deca <: SIPrefix end
-type Hecto <: SIPrefix end
-type Kilo <: SIPrefix end
-type Mega <: SIPrefix end
-type Giga <: SIPrefix end
-type Tera <: SIPrefix end
-type Peta <: SIPrefix end
-type Exa <: SIPrefix end
-type Zetta <: SIPrefix end
-type Yotta <: SIPrefix end
+immutable Yocto <: SIPrefix end
+immutable Zepto <: SIPrefix end
+immutable Atto <: SIPrefix end
+immutable Femto <: SIPrefix end
+immutable Pico <: SIPrefix end
+immutable Nano <: SIPrefix end
+immutable Micro <: SIPrefix end
+immutable Milli <: SIPrefix end
+immutable Centi <: SIPrefix end
+immutable Deci <: SIPrefix end
+immutable SINone <: SIPrefix end
+immutable Deca <: SIPrefix end
+immutable Hecto <: SIPrefix end
+immutable Kilo <: SIPrefix end
+immutable Mega <: SIPrefix end
+immutable Giga <: SIPrefix end
+immutable Tera <: SIPrefix end
+immutable Peta <: SIPrefix end
+immutable Exa <: SIPrefix end
+immutable Zetta <: SIPrefix end
+immutable Yotta <: SIPrefix end
 
 # PrettyShow and PrettyString
-pshow(x) = pshow(OUTPUT_STREAM::IO, x)
+pshow(x) = pshow(STDOUT::IO, x)
 function pstring(x)
     s = IOBuffer()
     pshow(s, x)
     takebuf_string(s)
 end
 # LatexShow and LatexString
-lshow(x) = lshow(OUTPUT_STREAM::IO, x)
+lshow(x) = lshow(STDOUT::IO, x)
 function lstring(x)
     s = IOBuffer()
     lshow(s, x)
     takebuf_string(s)
 end
 # FullShow and FullString
-fshow(x) = fshow(OUTPUT_STREAM::IO, x)
+fshow(x) = fshow(STDOUT::IO, x)
 function fstring(x)
     s = IOBuffer()
     fshow(s, x)
@@ -178,7 +178,7 @@ fshow(io::IO, ::Type{SINone}) = nothing
 
 # Units
 abstract UnitBase
-type Unit{TP<:SIPrefix, TU<:UnitBase} end
+immutable Unit{TP<:SIPrefix, TU<:UnitBase} end
 Unit{TP<:SIPrefix, TU<:UnitBase}(tp::Type{TP}, tu::Type{TU}) = Unit{tp, tu}
 Unit{TU<:UnitBase}(tu::Type{TU}) = Unit{SINone, tu}
 function show{TP<:SIPrefix, TU<:UnitBase}(io::IO, tu::Unit{TP, TU})
@@ -187,7 +187,7 @@ function show{TP<:SIPrefix, TU<:UnitBase}(io::IO, tu::Unit{TP, TU})
 end
 
 # Values with units
-type Quantity{TP<:SIPrefix, TU<:UnitBase, Tdata}
+immutable Quantity{TP<:SIPrefix, TU<:UnitBase, Tdata}
     value::Tdata
 end
 Quantity{TP<:SIPrefix, TU<:UnitBase, Tdata}(tp::Type{TP}, tu::Type{TU}, val::Tdata) = Quantity{tp, tu, Tdata}(val)
@@ -275,18 +275,18 @@ function _unit_gen_dict(table)
 end
 
 # Unknown unit
-type Unknown <: UnitBase end
+immutable Unknown <: UnitBase end
 
 # Length units
-type Meter <: UnitBase end
-type Angstrom <: UnitBase end
-type Inch <: UnitBase end
-type Foot <: UnitBase end
-type Yard <: UnitBase end
-type Mile <: UnitBase end
-type LightYear <: UnitBase end
-type Parsec <: UnitBase end
-type AstronomicalUnit <: UnitBase end
+immutable Meter <: UnitBase end
+immutable Angstrom <: UnitBase end
+immutable Inch <: UnitBase end
+immutable Foot <: UnitBase end
+immutable Yard <: UnitBase end
+immutable Mile <: UnitBase end
+immutable LightYear <: UnitBase end
+immutable Parsec <: UnitBase end
+immutable AstronomicalUnit <: UnitBase end
 let
   # Unit     RefUnit    ToRef            show      pshow     lshow   fshow
 const utable = {
@@ -306,13 +306,13 @@ _unit_gen_dict(utable[2:end])
 end
 
 # Time units
-type Second <: UnitBase end
-type Minute <: UnitBase end
-type Hour <: UnitBase end
-type Day <: UnitBase end
-type Week <: UnitBase end
-type YearJulian <: UnitBase end
-type PlanckTime <: UnitBase end
+immutable Second <: UnitBase end
+immutable Minute <: UnitBase end
+immutable Hour <: UnitBase end
+immutable Day <: UnitBase end
+immutable Week <: UnitBase end
+immutable YearJulian <: UnitBase end
+immutable PlanckTime <: UnitBase end
 let
   # Unit       RefUnit     ToRef            show      pshow     lshow  fshow
 const utable = {
@@ -329,7 +329,7 @@ _unit_gen_dict(utable[2:end])
 end
 
 # Rate units
-type Hertz <: UnitBase end
+immutable Hertz <: UnitBase end
 let
   # Unit       RefUnit     ToRef        show      pshow     lshow   fshow
 const utable = {
@@ -341,10 +341,10 @@ end
 
 # Mass units
 # (note English units like pounds are technically weight, not mass)
-type Gram <: UnitBase end
-type AtomicMassUnit <: UnitBase end
-type Dalton <: UnitBase end
-type PlanckMass <: UnitBase end
+immutable Gram <: UnitBase end
+immutable AtomicMassUnit <: UnitBase end
+immutable Dalton <: UnitBase end
+immutable PlanckMass <: UnitBase end
 let
   # Unit       RefUnit     ToRef           show      pshow     lshow  fshow
 const utable = {
@@ -359,7 +359,7 @@ _unit_gen_dict(utable[2:end])
 end
 
 # Electric current units
-type Ampere <: UnitBase end
+immutable Ampere <: UnitBase end
 let
   # Unit       RefUnit     ToRef        show      pshow     lshow   fshow
 const utable = {
@@ -372,9 +372,9 @@ end
 
 # Temperature units
 # The conversions for these are not just a product
-type Kelvin <: UnitBase end
-type Celsius <: UnitBase end
-type Fahrenheit <: UnitBase end
+immutable Kelvin <: UnitBase end
+immutable Celsius <: UnitBase end
+immutable Fahrenheit <: UnitBase end
 let
   # Unit       RefUnit  ToRef              FromRef     show    pshow  lshow  fshow
 const utable = {
@@ -388,7 +388,7 @@ _unit_gen_dict(utable[2:end])
 end
 
 # Luminosity units
-type Candela <: UnitBase end
+immutable Candela <: UnitBase end
 let
   # Unit       RefUnit     ToRef        show      pshow     lshow   fshow
 const utable = {
@@ -400,8 +400,8 @@ end
 
 
 # Amount units
-type Mole <: UnitBase end
-type Entities <: UnitBase end
+immutable Mole <: UnitBase end
+immutable Entities <: UnitBase end
 let
   # Unit       RefUnit     ToRef        show      pshow     lshow   fshow
 const utable = {
