@@ -2,7 +2,7 @@
 
 module Units
 
-import Base.show, Base.convert
+import Base: *, /, convert, show
 
 export  SIPrefix,
         Quantity,
@@ -289,15 +289,16 @@ end
 immutable Unknown <: UnitBase end
 
 # Length units
-immutable Meter <: UnitBase end
-immutable Angstrom <: UnitBase end
-immutable Inch <: UnitBase end
-immutable Foot <: UnitBase end
-immutable Yard <: UnitBase end
-immutable Mile <: UnitBase end
-immutable LightYear <: UnitBase end
-immutable Parsec <: UnitBase end
-immutable AstronomicalUnit <: UnitBase end
+abstract UnitLength <: UnitBase
+immutable Meter <: UnitLength end
+immutable Angstrom <: UnitLength end
+immutable Inch <: UnitLength end
+immutable Foot <: UnitLength end
+immutable Yard <: UnitLength end
+immutable Mile <: UnitLength end
+immutable LightYear <: UnitLength end
+immutable Parsec <: UnitLength end
+immutable AstronomicalUnit <: UnitLength end
 let
   # Unit     RefUnit    ToRef            show      pshow     lshow   fshow
 const utable = {
@@ -317,13 +318,14 @@ _unit_gen_dict(utable[2:end])
 end
 
 # Time units
-immutable Second <: UnitBase end
-immutable Minute <: UnitBase end
-immutable Hour <: UnitBase end
-immutable Day <: UnitBase end
-immutable Week <: UnitBase end
-immutable YearJulian <: UnitBase end
-immutable PlanckTime <: UnitBase end
+abstract UnitTime <: UnitBase
+immutable Second <: UnitTime end
+immutable Minute <: UnitTime end
+immutable Hour <: UnitTime end
+immutable Day <: UnitTime end
+immutable Week <: UnitTime end
+immutable YearJulian <: UnitTime end
+immutable PlanckTime <: UnitTime end
 let
   # Unit       RefUnit     ToRef            show      pshow     lshow  fshow
 const utable = {
@@ -352,10 +354,11 @@ end
 
 # Mass units
 # (note English units like pounds are technically weight, not mass)
-immutable Gram <: UnitBase end
-immutable AtomicMassUnit <: UnitBase end
-immutable Dalton <: UnitBase end
-immutable PlanckMass <: UnitBase end
+abstract UnitMass <: UnitBase
+immutable Gram <: UnitMass end
+immutable AtomicMassUnit <: UnitMass end
+immutable Dalton <: UnitMass end
+immutable PlanckMass <: UnitMass end
 let
   # Unit       RefUnit     ToRef           show      pshow     lshow  fshow
 const utable = {
@@ -453,5 +456,25 @@ function convert{Uin<:UnitBase, Uout<:UnitBase, Pin<:SIPrefix, Pout<:SIPrefix, T
     end
     return Quantity(Pout, Uout, from_reference(Uout)(to_reference(Uin)(q.value*to_reference(Pin))) / to_reference(Pout))
 end
+
+
+# Arithmetic with Quantities
+(*){TP,TU}(n::Number, q::Quantity{TP,TU}) = Quantity(TP, TU, n*q.value)
+(*){TP,TU}(q::Quantity{TP,TU}, n::Number) = Quantity(TP, TU, n*q.value)
+(/){TP,TU}(q::Quantity{TP,TU}, n::Number) = Quantity(TP, TU, q.value/n)
+
+(/){TP,TU<:UnitLength}(q1::Quantity{TP,TU}, q2::Quantity{TP,TU}) = q1.value/q2.value
+(/){TP1,TP2,TU<:UnitLength}(q1::Quantity{TP1,TU}, q2::Quantity{TP2,TU}) = q1.value/q2.value*to_reference(TP1)/to_reference(TP2)
+(/){TP1,TP2,TU1<:UnitLength,TU2<:UnitLength}(q1::Quantity{TP1,TU1}, q2::Quantity{TP2,TU2}) = from_reference(TU2)(to_reference(TU1)(q1.value/q2.value*to_reference(TP1)/to_reference(TP2)))
+(/){TP,TU<:UnitTime}(q1::Quantity{TP,TU}, q2::Quantity{TP,TU}) = q1.value/q2.value
+(/){TP1,TP2,TU<:UnitTime}(q1::Quantity{TP1,TU}, q2::Quantity{TP2,TU}) = q1.value/q2.value*to_reference(TP1)/to_reference(TP2)
+(/){TP1,TP2,TU1<:UnitTime,TU2<:UnitTime}(q1::Quantity{TP1,TU1}, q2::Quantity{TP2,TU2}) = from_reference(TU2)(to_reference(TU1)(q1.value/q2.value*to_reference(TP1)/to_reference(TP2)))
+(/){TP,TU<:UnitMass}(q1::Quantity{TP,TU}, q2::Quantity{TP,TU}) = q1.value/q2.value
+(/){TP1,TP2,TU<:UnitMass}(q1::Quantity{TP1,TU}, q2::Quantity{TP2,TU}) = q1.value/q2.value*to_reference(TP1)/to_reference(TP2)
+(/){TP1,TP2,TU1<:UnitMass,TU2<:UnitMass}(q1::Quantity{TP1,TU1}, q2::Quantity{TP2,TU2}) = from_reference(TU2)(to_reference(TU1)(q1.value/q2.value*to_reference(TP1)/to_reference(TP2)))
+
+(/){TP,TU}(q1::Quantity{TP,TU}, q2::Quantity{TP,TU}) = q1.value/q2.value
+(/){TP1,TP2,TU}(q1::Quantity{TP1,TU}, q2::Quantity{TP2,TU}) = q1.value/q2.value*to_reference(TP1)/to_reference(TP2)
+
 
 end
