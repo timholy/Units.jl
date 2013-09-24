@@ -75,7 +75,8 @@ export  SIPrefix,
         lshow,
         prefix,
         pshow,
-        parse_quantity
+        parse_quantity,
+        sshow
 
 
 abstract SIPrefix
@@ -124,7 +125,7 @@ function fstring(x)
 end
 
 let
-#  Prefix        ToSINone      Show          PrettyShow   LatexShow  Full
+#  Prefix        ToSINone      SimpleShow    PrettyShow   LatexShow  Full
 const prefix_table = {
   (Yocto,        1e-24,        "y",          "y",         "y",       "yocto")
   (Zepto,        1e-21,        "z",          "z",         "z",       "zepto")
@@ -148,16 +149,19 @@ const prefix_table = {
   (Yotta,        1e24,         "Y",          "Y",         "Y",       "yotta")
 }
 global to_reference
-global show
 global pshow
+global sshow
 global lshow
+global fshow
 global _unit_si_prefixes
-for (t, f, s, ps, ls, fs) in prefix_table
+for (t, f, ss, ps, ls, fs) in prefix_table
     @eval to_reference(::Type{$t}) = $f
-    @eval show(io::IO, ::Type{$t}) = print(io, $s)
-    @eval pshow(io, ::Type{$t}) = print(io, $ps)
-    @eval lshow(io, ::Type{$t}) = print(io, $ls)
-    @eval fshow(io, ::Type{$t}) = print(io, $fs)
+    @eval sshow(io::IO, ::Type{$t}) = print(io, $ss)
+    @eval pshow(io::IO, ::Type{$t}) = print(io, $ps)
+    @eval lshow(io::IO, ::Type{$t}) = print(io, $ls)
+    @eval fshow(io::IO, ::Type{$t}) = print(io, $fs)
+    # Default to prettyshow
+    @eval show(io::IO, ::Type{$t}) = print(io, $ps)
 end
 function return_prefix(i::Int)
     if i <= length(prefix_table)
@@ -171,7 +175,7 @@ end
 _unit_si_prefixes = ntuple(length(prefix_table)+1, i->return_prefix(i))
 end  # let
 to_reference(::Type{SINone}) = 1
-show(io::IO, ::Type{SINone}) = nothing
+sshow(io::IO, ::Type{SINone}) = nothing
 pshow(io::IO, ::Type{SINone}) = nothing
 lshow(io::IO, ::Type{SINone}) = nothing
 fshow(io::IO, ::Type{SINone}) = nothing
@@ -186,7 +190,13 @@ function show{TP<:SIPrefix, TU<:UnitBase}(io::IO, tu::Unit{TP, TU})
     print(io, TU)
 end
 
-# Values with units
+
+###################################
+###         Quantity            ###
+###################################
+# A quantity is a value with a unit; it preserves the memory
+# of the unit specified by the user. However, quantities cannot
+# be combined to make compound units such as Joule
 immutable Quantity{TP<:SIPrefix, TU<:UnitBase, Tdata}
     value::Tdata
 end
@@ -195,10 +205,10 @@ Quantity{TU<:UnitBase, Tdata}(tu::Type{TU}, val::Tdata) = Quantity{SINone, tu, T
 prefix{TP<:SIPrefix, TU<:UnitBase, Tdata}(q::Quantity{TP, TU, Tdata}) = TP
 base{TP<:SIPrefix, TU<:UnitBase, Tdata}(q::Quantity{TP, TU, Tdata}) = TU
 
-function show{TP<:SIPrefix, TU<:UnitBase}(io::IO, q::Quantity{TP, TU})
+function sshow{TP<:SIPrefix, TU<:UnitBase}(io::IO, q::Quantity{TP, TU})
     print(io, q.value, " ")
-    show(io, TP)
-    show(io, TU)
+    sshow(io, TP)
+    sshow(io, TU)
 end
 function pshow{TP<:SIPrefix, TU<:UnitBase}(io::IO, q::Quantity{TP, TU})
     print(io, q.value, " ")
@@ -215,6 +225,7 @@ function fshow{TP<:SIPrefix, TU<:UnitBase}(io::IO, q::Quantity{TP, TU})
     fshow(io, TP)
     fshow(io, TU)
 end
+show(io::IO, q::Quantity) = pshow(io, q)
 
 # Functions and dictionaries for parsing
 _unit_string_dict = (String=>Tuple)[]
