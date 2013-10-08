@@ -103,24 +103,31 @@ immutable Zetta <: SIPrefix end
 immutable Yotta <: SIPrefix end
 
 # PrettyShow and PrettyString
-pshow(x) = pshow(STDOUT::IO, x)
+pshow(x) = pshow(STDOUT, x)
 function pstring(x)
     s = IOBuffer()
     pshow(s, x)
     takebuf_string(s)
 end
 # LatexShow and LatexString
-lshow(x) = lshow(STDOUT::IO, x)
+lshow(x) = lshow(STDOUT, x)
 function lstring(x)
     s = IOBuffer()
     lshow(s, x)
     takebuf_string(s)
 end
 # FullShow and FullString
-fshow(x) = fshow(STDOUT::IO, x)
+fshow(x) = fshow(STDOUT, x)
 function fstring(x)
     s = IOBuffer()
     fshow(s, x)
+    takebuf_string(s)
+end
+# SimpleShow and SimpleString
+sshow(x) = sshow(STDOUT, x)
+function sstring(x)
+    s = IOBuffer()
+    sshow(s, x)
     takebuf_string(s)
 end
 
@@ -235,10 +242,11 @@ function _unit_gen_func_multiplicative(table)
         @eval reference(::Type{$t}) = $r
         @eval to_reference(::Type{$t}) = x->x*$to_r
         @eval from_reference(::Type{$t}) = x->x/$to_r
-        @eval show(io::IO, ::Type{$t}) = print(io, $s)
+        @eval sshow(io::IO, ::Type{$t}) = print(io, $s)
         @eval pshow(io::IO, ::Type{$t}) = print(io, $ps)
         @eval lshow(io::IO, ::Type{$t}) = print(io, $ls)
         @eval fshow(io::IO, ::Type{$t}) = print(io, $fs)
+        @eval show(io::IO, ::Type{$t}) = print(io, $ps)
     end
 end
 
@@ -247,20 +255,21 @@ function _unit_gen_func(table)
         @eval reference(::Type{$t}) = $r
         @eval to_reference(::Type{$t}) = $to_func
         @eval from_reference(::Type{$t}) = $from_func
-        @eval show(io::IO, ::Type{$t}) = print(io, $s)
+        @eval sshow(io::IO, ::Type{$t}) = print(io, $s)
         @eval pshow(io::IO, ::Type{$t}) = print(io, $ps)
         @eval lshow(io::IO, ::Type{$t}) = print(io, $ls)
         @eval fshow(io::IO, ::Type{$t}) = print(io, $fs)
+        @eval show(io::IO, ::Type{$t}) = print(io, $ps)
     end
 end
 
 
 function _unit_gen_dict_with_prefix(table)
     for (u, rest) in table
-        ustr = string(u)
+        ustr = sstring(u)
         upstr = pstring(u)
         for p in _unit_si_prefixes
-            pstr = string(p)
+            pstr = sstring(p)
             key = pstr*ustr
 #            println(key, ": ", p, ", ", u) 
             _unit_string_dict[key] = (p, u)
