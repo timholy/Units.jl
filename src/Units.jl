@@ -2,6 +2,8 @@
 
 module Units
 
+warn("This package is deprecated. Use SIUnits instead. See the README/homepage for information on porting your code")
+
 import Base: *, /, convert, show
 
 export  SIPrefix,
