@@ -6,7 +6,7 @@ Infrastructure for handling physical units for the Julia programming language
 Warning
 =======
 
-This is deprecated! Use SIUnits instead.
+**This `Units.jl` package is deprecated! Use the [`SIUnits`](https://github.com/Keno/SIUnits.jl) package instead.**
 
 Here is some advice on transitioning:
 
